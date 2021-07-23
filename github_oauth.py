@@ -21,9 +21,30 @@ author: Sukesh Sama
 EXAMPLES = '''
 - name: Generate JWT token
     github_token:
-      issuer_claim: "{{ issuer_claim_from_github }}"
-      private_key: "{{ githubsshkey_in_base64_format }}"
-    register: _jwttoken
+      issuer_claim: "{{ github_issuer_claim }}"
+      private_key: "{{ githubsshkey }}" #provide private in base64 format
+    register: _jwttoken         
+- name: Generate Oauth token
+    uri:
+      url:  "https://api.github.com/app/installations/{{ github_installation_id }}/access_tokens"
+      method: POST
+      headers:
+        Authorization: "Bearer {{ _jwttoken.metadata.token }}"
+        Accept: "application/vnd.github.v3+json"
+      status_code: [201]
+    register: _oauth
+- set_fact:
+    github_token: "{{ _oauth.json.token }}"
+  no_log: true
+  
+- name: Create GitHub Project 
+  shell: >
+    curl -v -sS \
+    -X POST \
+    -H "Accept: application/vnd.github.nebula-preview+json" \
+    -H "Authorization: Bearer {{ github_token }}" \
+    https://api.github.com/orgs/{{ github_group }}/repos \
+    -d '{"name":"{{ repo_name }}","visibility":"{{ scope }}"}'
 '''
 
 from ansible.module_utils.basic import *
