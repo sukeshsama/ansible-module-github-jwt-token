@@ -3,7 +3,7 @@
 
 DOCUMENTATION = '''
 ---
-module: github_token
+module: github_oauth
 description: Generate token using Private key
 short_description: Generate token using Private key
 options:
@@ -20,7 +20,7 @@ author: Sukesh Sama
 
 EXAMPLES = '''
 - name: Generate JWT token
-    github_token:
+    github_oauth:
       issuer_claim: "{{ github_issuer_claim }}"
       private_key: "{{ githubsshkey }}" #provide private in base64 format
     register: _jwttoken         
