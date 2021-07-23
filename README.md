@@ -1,4 +1,4 @@
-# ansible-module-github_jwt-token
+# ansible-module-github-jwt-token
 Ansible module to Generate the Github token
 
 Place this module inside library folder
